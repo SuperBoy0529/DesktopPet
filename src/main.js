@@ -123,6 +123,8 @@ function publicState() {
     skipTaskbar: state.skipTaskbar,
     background: state.background,
     hasTray: Boolean(tray),
+    // 'image' = src/assets/tubes 存在（自备素材）；'css' = 纯 CSS 数码管（公开版默认）
+    assetsMode,
     worldline: {
       micro: state.worldline.micro,
       text: worldline.formatMicro(state.worldline.micro),
@@ -676,20 +678,25 @@ function copyDirSync(from, to) {
   }
 }
 
+// 只铺"支撑文件"：关闭图标、噪点、托盘图标（都是本项目自绘，无版权问题）。
+// 数码管 / 分隔点 / 底图刻意不铺 —— 它们缺失时渲染层改用纯 CSS 画，
+// 也就是最初还没有美术素材时的外观。
+const SUPPORT_ASSETS = ['croix.png', 'noise.png', 'tray-16.png', 'tray-32.png'];
+let assetsMode = 'css';
+
 function ensureAssets() {
-  const probe = path.join(ASSETS_DIR, 'tubes', '0.png');
-  if (fs.existsSync(probe)) {
-    logSync('assets: using', ASSETS_DIR);
-    return;
-  }
   try {
-    copyDirSync(ASSETS_DEFAULT_DIR, ASSETS_DIR);
-    logSync('assets: seeded from assets-default');
+    fs.mkdirSync(ASSETS_DIR, { recursive: true });
+    for (const name of SUPPORT_ASSETS) {
+      const src = path.join(ASSETS_DEFAULT_DIR, name);
+      const dst = path.join(ASSETS_DIR, name);
+      if (!fs.existsSync(dst) && fs.existsSync(src)) fs.copyFileSync(src, dst);
+    }
   } catch (err) {
-    // 只读安装目录（例如 Program Files）下会失败；此时仍能用默认素材，
-    // 但渲染层是按 assets/ 取图的，所以把这个情况写进日志方便排查。
-    logSync('assets: seed failed ->', err.message);
+    logSync('assets: support copy failed ->', err.message);
   }
+  assetsMode = fs.existsSync(path.join(ASSETS_DIR, 'tubes', '0.png')) ? 'image' : 'css';
+  logSync('assets: mode =', assetsMode, assetsMode === 'css' ? '(CSS nixie)' : '(image tubes)');
 }
 /* -------------------------------------------------------------- 右键菜单 */
 

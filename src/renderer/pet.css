@@ -1,4 +1,4 @@
-/* 世界线变动率探测仪 —— 使用 image/ 素材的 8 位辉光管视觉层
+﻿/* 世界线变动率探测仪 —— 使用 image/ 素材的 8 位辉光管视觉层
  *
  * 管体来自 src/assets/tubes/*.png（由 tools/prepare-assets.ps1 从 image/ 抠底生成）。
  * 这里只负责排版、状态样式与动画，不再用 CSS 模拟管子。
@@ -424,4 +424,101 @@ body.dragging {
   50% {
     opacity: 0.95;
   }
+}
+
+/* ==================================================================
+   无素材时的 CSS 数码管（公开版默认外观）
+   —— 也就是最开始还没有任何美术素材时的样子。
+   素材图存在时盖在字符上面；缺失时字符直接露出，无需切换模式。
+   ================================================================== */
+
+/* 槽位始终可以画字符 */
+.slot::after {
+  content: attr(data-glyph);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bahnschrift Light', 'Segoe UI Light', 'Consolas', monospace;
+  font-weight: 200;
+  font-size: calc(var(--tube-h) * 0.56);
+  line-height: 1;
+  color: #ffb257;
+  text-shadow:
+    0 0 6px rgba(255, 155, 55, 0.9),
+    0 0 18px rgba(255, 115, 25, 0.55),
+    0 0 40px rgba(255, 80, 15, 0.25);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms linear;
+}
+
+/* 素材图压在字符之上 */
+.tube-img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* CSS 模式：隐藏素材图，显示字符，并把槽位本身画成灯管 */
+body[data-assets="css"] .tube-img {
+  display: none;
+}
+
+body[data-assets="css"] .slot::after {
+  opacity: 1;
+}
+
+body[data-assets="css"] .slot {
+  border-radius: 11px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 190, 120, 0.05) 0 1px, transparent 1px 11px),
+    repeating-linear-gradient(90deg, rgba(255, 190, 120, 0.05) 0 1px, transparent 1px 11px),
+    linear-gradient(180deg, rgba(58, 34, 18, 0.95) 0%, rgba(10, 7, 5, 0.98) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 170, 90, 0.28),
+    inset 0 -20px 34px rgba(0, 0, 0, 0.55),
+    0 0 10px rgba(255, 120, 30, 0.12);
+}
+
+body[data-assets="css"] .slot.is-sep {
+  background: linear-gradient(180deg, rgba(30, 18, 10, 0.95) 0%, rgba(8, 5, 3, 0.98) 100%);
+}
+
+body[data-assets="css"] .slot.is-sep::after {
+  content: '';
+}
+
+/* 分隔点：dot.png 缺失时 <img> 会画出破图图标，所以直接隐藏，
+   改由槽位自身的径向渐变来画（1 个点居中 / 2 个点上下）。 */
+body[data-assets="css"] .sep-dot {
+  display: none;
+}
+
+body[data-assets="css"] .slot.is-sep[data-dots="1"] {
+  background:
+    radial-gradient(circle 6px at 50% 50%, #ffe8c4 0%, rgba(255, 150, 50, 0.85) 55%, transparent 100%),
+    radial-gradient(circle 13px at 50% 50%, rgba(255, 120, 30, 0.3) 0%, transparent 100%),
+    linear-gradient(180deg, rgba(30, 18, 10, 0.95) 0%, rgba(8, 5, 3, 0.98) 100%);
+}
+
+body[data-assets="css"] .slot.is-sep[data-dots="2"] {
+  background:
+    radial-gradient(circle 6px at 50% 32%, #ffe8c4 0%, rgba(255, 150, 50, 0.85) 55%, transparent 100%),
+    radial-gradient(circle 13px at 50% 32%, rgba(255, 120, 30, 0.3) 0%, transparent 100%),
+    radial-gradient(circle 6px at 50% 68%, #ffe8c4 0%, rgba(255, 150, 50, 0.85) 55%, transparent 100%),
+    radial-gradient(circle 13px at 50% 68%, rgba(255, 120, 30, 0.3) 0%, transparent 100%),
+    linear-gradient(180deg, rgba(30, 18, 10, 0.95) 0%, rgba(8, 5, 3, 0.98) 100%);
+}
+/* 换字闪动同样作用于 CSS 字符 */
+body[data-assets="css"] .slot.settle::after {
+  animation: settle 150ms ease-out;
+}
+
+/* 底图缺失时的渐变兜底（多重背景里加载失败的图层会被跳过） */
+.pet.background-fond {
+  background-image:
+    url("../assets/fond-panel.png"),
+    linear-gradient(180deg, #1c120b 0%, #090604 100%);
 }

@@ -108,6 +108,7 @@ function applyGlyphs(glyphs, opts = {}) {
 
     if (isSep) {
       slot.dataset.dots = String(sepDots);
+      slot.dataset.glyph = '';
       // 分隔符管位也是一支真实的管：换成"未点亮"的管体，再把光点叠在上面
       const sepImg = slot.querySelector('.tube-img');
       if (sepImg.dataset.glyph !== ' ') {
@@ -118,6 +119,7 @@ function applyGlyphs(glyphs, opts = {}) {
     }
 
     const glyph = glyphs[i] ?? ' ';
+    slot.dataset.glyph = glyph === ' ' ? '' : glyph;
     const img = slot.querySelector('.tube-img');
     const changed = img.dataset.glyph !== glyph;
     if (changed) {
@@ -422,8 +424,13 @@ function applyAppearance() {
   if (look.showHeader === false) el.hudLabel.style.display = 'none';
 }
 
-async function boot() {
-  el.pet = document.getElementById('pet');
+function applyAssetsMode(mode) {
+  // 素材模式由主进程判定：有 tubes 图就盖图，没有就用 CSS 画的数码管
+  const m = mode === 'image' ? 'image' : 'css';
+  if (document.body.dataset.assets !== m) document.body.dataset.assets = m;
+}
+
+async function boot() {  el.pet = document.getElementById('pet');
   el.rack = document.getElementById('rack');
   el.hudLabel = document.getElementById('hudLabel');
   el.hudChapter = document.getElementById('hudChapter');
@@ -438,6 +445,7 @@ async function boot() {
   const initial = await window.dsh.bootstrap();
   cfg = initial.config;
   state = initial.state;
+  applyAssetsMode(state.assetsMode);
   if (initial.texts) {
     if (initial.texts.brand) brand = initial.texts.brand;
     if (initial.texts.status) statusText = { ...statusText, ...initial.texts.status };
@@ -459,6 +467,7 @@ async function boot() {
     const backgroundChanged = !state || state.background !== next.background;
     const clickThroughChanged = !state || state.clickThrough !== next.clickThrough;
     state = next;
+    applyAssetsMode(next.assetsMode);
     // 背景材质可能被菜单/托盘改掉：重挂样式类（亚克力还要靠主进程重建窗口）
     if (backgroundChanged) applyAppearance();
     // 穿透状态变了：刷新第二行的"怎么恢复"提示

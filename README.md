@@ -572,6 +572,10 @@ powershell -ExecutionPolicy Bypass -File tools\sign.ps1 -Pfx 正式证书.pfx -P
 
 ## 13. 素材与版权（重要）
 
+> **更新（v1.1）**：默认外观已改为**纯 CSS 数码管**（最初没有美术素材时的样子）。
+> 仓库里的 `src/assets-default/` 现在只保留支撑文件（关闭图标、噪点、托盘图标），
+> 不再包含管子图片。两种外观的切换规则见 **第 14 节**。
+
 ### 本仓库不含任何第三方美术素材
 
 `image/` 目录**不在本仓库里**（已写进 `.gitignore`）。仓库里提交的只有：
@@ -617,3 +621,39 @@ powershell -ExecutionPolicy Bypass -File tools\sign.ps1 -Pfx 正式证书.pfx -P
 请使用你有权使用的素材（自己绘制、或你已合法持有的资源），并自行承担相应使用责任。
 
 版权与授权边界见 [NOTICE.md](NOTICE.md)。
+
+---
+
+## 14. 外观模式：CSS 数码管 / 图片管子
+
+程序启动时检测 `src\assets\tubes\0.png` 是否存在，自动选择外观，**无需手动切换**：
+
+| 条件 | 模式 | 外观 | 日志 |
+|---|---|---|---|
+| `src\assets\tubes\` 不存在 | `css` | **纯 CSS 绘制**：灯管用渐变 + 栅格网，数字用字体 + 多层辉光，分隔点用径向渐变 | `assets: mode = css (CSS nixie)` |
+| 存在 | `image` | 用 `tubes\*.png` 盖在字符上 | `assets: mode = image (image tubes)` |
+
+### 默认（公开版）为什么是 CSS
+
+仓库不再提交任何管子图片，`src\assets-default\` 只剩四个支撑文件
+（`croix.png`、`noise.png`、`tray-16.png`、`tray-32.png`，均为本项目自绘）。
+所以**克隆下来直接运行就是 CSS 外观**——也就是最初还没有美术素材时的样子。
+
+### 想换成自己的素材
+
+把图放进 `image\`，然后：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\prepare-assets.ps1
+```
+
+脚本生成 `src\assets\tubes\*.png` 等文件，下次启动自动切到 `image` 模式。
+`src\assets\` 已被 gitignore，不会误提交。
+
+### 实现要点（给改代码的人）
+
+- 字符始终写在槽位上：`pet.js` 设置 `slot.dataset.glyph`，CSS 用
+  `.slot::after { content: attr(data-glyph) }` 渲染；
+- 图片模式下 `.tube-img` 以 `position:absolute; z-index:1` 盖住字符；
+- CSS 模式下 `body[data-assets="css"]` 隐藏图片层，并给槽位画灯管、给分隔位画圆点；
+- 分隔点的 `<img>` 在 CSS 模式下**直接 display:none**，否则缺失文件会渲染成破图图标。
