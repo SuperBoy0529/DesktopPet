@@ -16,7 +16,7 @@
 · Windows 桌面版，免安装绿色版 + 安装包
 
 开源（源码 + 可自行构建）：
-https://github.com/<你的用户名>/<仓库名>
+https://github.com/SuperBoy0529/DesktopPet
 
 安装包在仓库的 Releases 里。
 
