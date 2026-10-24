@@ -62,6 +62,14 @@ exit /b 0
 '@
 Set-Content -Path (Join-Path $app 'Start.bat') -Value $bat -Encoding ASCII
 
+# 公开包不能带上本地自备素材：src\assets 是运行时目录，复制完成后剔除，
+# 让程序首次启动时从 assets-default 生成自绘素材
+$runtimeAssets = Join-Path $app 'resources\app\src\assets'
+if (Test-Path $runtimeAssets) {
+  Remove-Item $runtimeAssets -Recurse -Force
+  Write-Host '    (excluded local src\assets from the package)'
+}
+
 Write-Host '[7] result'
 $size = (Get-ChildItem $app -Recurse -File | Measure-Object Length -Sum).Sum / 1MB
 Write-Host ("    {0}" -f $app)

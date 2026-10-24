@@ -467,8 +467,12 @@ async function main() {
   });
 
   await check('原地按下抬起仍被判定为点击', async () => {
+    // 先显式把光标放到窗口中心再按下：否则会受上一个拖拽测试留下的光标位置影响
+    const box = win32(['-Action', 'info']);
+    win32(['-Action', 'move', '-X', String(box.x + Math.round(box.w / 2)), '-Y', String(box.y + Math.round(box.h / 2))]);
+    await sleep(120);
     const up = await pet.eval(
-      `(async () => { await window.dsh.pointerDown(); await new Promise(r => setTimeout(r, 120)); return await window.dsh.pointerUp(); })()`,
+      `(async () => { await window.dsh.pointerDown(); await new Promise(r => setTimeout(r, 160)); return await window.dsh.pointerUp(); })()`,
     );
     assert(up.dragged === false, '原地点击被误判为拖拽');
   });
