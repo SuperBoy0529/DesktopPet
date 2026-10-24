@@ -227,6 +227,8 @@ body.dragging {
 .sep-dot {
   display: none; /* 默认熄灭；只有分隔符管位才点亮 */
   position: absolute;
+  /* 必须高于 .tube-img(z-index:1)，否则光点会被管体图片盖住 */
+  z-index: 2;
   left: 50%;
   width: 62%;
   height: auto;
