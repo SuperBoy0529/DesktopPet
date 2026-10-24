@@ -567,3 +567,53 @@ powershell -ExecutionPolicy Bypass -File tools\sign.ps1 -Pfx 正式证书.pfx -P
 ---
 
 *这不是命运石之门的选择，只是一个桌面挂件。但至少它每次都会变一点点。*
+
+---
+
+## 13. 素材与版权（重要）
+
+### 本仓库不含任何第三方美术素材
+
+`image/` 目录**不在本仓库里**（已写进 `.gitignore`）。仓库里提交的只有：
+
+| 目录 | 内容 | 归属 |
+|---|---|---|
+| `src\assets-default\` | 数码管、分隔点、关闭图标、底图 | **本项目所有**，由 `tools\make-art.ps1` 程序绘制 |
+| `src\assets\noise.png` `tray-*.png` | 噪点纹理、托盘图标 | 本项目所有，由 `tools\make-icon.ps1` 绘制 |
+
+`src\assets-default\` 的图是脚本画出来的（玻璃管渐变 + 栅极网格 + 琥珀色线框字形），
+不是从任何游戏里提取的文件。**风格不受版权保护，具体的图受保护**——所以我们只复刻观感，不复刻文件。
+
+### 程序怎么取素材
+
+启动时如果 `src\assets\` 不存在，会自动从 `src\assets-default\` 铺一份过去（日志里有 `assets: seeded from assets-default`）。
+所以你克隆下来直接 `npm start` 就能看到完整界面。
+
+### 如何换成你自己的素材
+
+程序不绑定具体素材，你完全可以换成自己画的、或者你合法拥有的图：
+
+1. 把图放进 `image\`，文件名固定：
+
+   | 文件 | 用途 |
+   |---|---|
+   | `0.png` … `9.png` | 十个数字的灯管（原图可以是带背景的截图，脚本会自动抠底） |
+   | `empty.png` | 不点亮的灯管 |
+   | `dot.png` | 分隔点 |
+   | `croix.png` | 菜单里的关闭图标 |
+   | `fond.png` | 背板底图 |
+
+2. 运行：
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File tools\prepare-assets.ps1
+   ```
+
+3. 生成结果写入 `src\assets\`（该目录已被 gitignore，不会误提交）。
+
+### 本仓库**不提供**第三方素材
+
+仓库、Release、文档里都**不含**《STEINS;GATE》的美术资源，也**不提供任何下载链接**。
+请使用你有权使用的素材（自己绘制、或你已合法持有的资源），并自行承担相应使用责任。
+
+版权与授权边界见 [NOTICE.md](NOTICE.md)。
