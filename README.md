@@ -2,7 +2,7 @@
 
 《命运石之门》主题的 Windows 桌面宠物：8 位辉光管、Amadeus 仪表气质、时间与世界线双模式。
 
-![默认外观](screens/css-mode.png)
+![时间模式](screens/ui-time.png)
 
 > 默认是**纯 CSS 绘制**的数码管，克隆下来直接就能跑，不依赖任何图片。
 > 想换成自己的美术素材，见[外观与素材](#外观与素材)。
@@ -19,6 +19,10 @@
 - 位置记忆、单实例、无边框透明窗口、始终置顶
 - 配置与文案**分离**：行为参数在 `config.json`，所有给人看的字在 `texts.json`
 - 纯 CSS 外观 + 可选图片素材，两种模式自动切换
+
+![世界线模式](screens/ui-worldline.png)
+
+![点击穿透时的恢复把手](screens/ui-passthrough.png)
 
 ---
 
@@ -83,7 +87,7 @@ npm start          # 等价于 node launch.js
 
 3. 生成到 `src\assets\`，下次启动自动切换到图片模式。该目录已被 `.gitignore` 忽略。
 
-![使用自备素材的效果](screens/image-mode.png)
+> 换成自备素材后，管体改为图片渲染（此处不放截图，避免本仓库出现第三方美术内容）。
 
 ---
 
