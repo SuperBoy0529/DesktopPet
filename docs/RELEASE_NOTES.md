@@ -39,10 +39,11 @@ v1.0.0 · 世界线变动率探测仪（纯 CSS 外观 · 不含游戏素材）
 - 开始菜单与桌面会创建快捷方式，附带 README
 - 卸载：设置 → 应用 → 卸载，或安装目录里的 `uninstall.exe`
 - 升级不会覆盖你改过的 `config.json` / `texts.json`
+- 安装目录内含 `image\` 与 `tools\prepare-assets.ps1`，用于替换成自己的美术素材
 
 **SHA256**
 ```
-AEBC7BF8D18D2B3575B2DD59321200AC5C06C4A090A56AE7E5D22B6AA86340D7
+38AB035FF800290CC8421BB28D9E2D826DDA3AE9FCFD2BAAE9C6D1A31977E97E
 ```
 
 ## ✨ 功能

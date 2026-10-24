@@ -45,7 +45,33 @@ foreach ($item in 'src', 'package.json', 'config.json', 'texts.json') {
 $defaultApp = Join-Path $app 'resources\default_app.asar'
 if (Test-Path $defaultApp) { Remove-Item $defaultApp -Force }
 
-Write-Host '[6] write launcher bat'
+Write-Host '[6] ship asset tools + empty image folder'
+# 安装版也要能换素材：README 让用户运行 tools\prepare-assets.ps1，
+# 所以脚本必须真的跟着装进去，否则文档是空话。
+$toolOut = Join-Path $app 'tools'
+New-Item -ItemType Directory -Force -Path $toolOut | Out-Null
+foreach ($script in 'prepare-assets.ps1', 'make-art.ps1') {
+  Copy-Item (Join-Path $root "tools\$script") -Destination $toolOut -Force
+}
+$imgDir = Join-Path $app 'image'
+New-Item -ItemType Directory -Force -Path $imgDir | Out-Null
+$imgReadme = @"
+把你要用的素材放进这个文件夹，文件名固定：
+
+  0.png 1.png ... 9.png   十个数字的灯管（带背景的截图也可以，脚本会抠底）
+  empty.png               不点亮的灯管
+  dot.png                 分隔点
+  croix.png               菜单关闭图标
+  fond.png                背板底图（可选）
+
+放好后运行：  tools\prepare-assets.ps1
+程序下次启动会自动切换成图片外观。
+
+本文件夹里的图片只在本机使用，不会随程序分发。
+"@
+Set-Content -Path (Join-Path $imgDir 'README.txt') -Value $imgReadme -Encoding UTF8
+
+Write-Host '[7] write launcher bat'
 # 打包版没有 Node，launch.js 那套「先正常启动、失败再用 --no-sandbox」得用批处理复刻。
 # 内容必须纯 ASCII：cmd 按系统 ANSI 代码页解析 .bat，中文会撑坏语法。
 $bat = @'
@@ -70,7 +96,7 @@ if (Test-Path $runtimeAssets) {
   Write-Host '    (excluded local src\assets from the package)'
 }
 
-Write-Host '[7] result'
+Write-Host '[8] result'
 $size = (Get-ChildItem $app -Recurse -File | Measure-Object Length -Sum).Sum / 1MB
 Write-Host ("    {0}" -f $app)
 Write-Host ("    exe = {0}" -f $exe)

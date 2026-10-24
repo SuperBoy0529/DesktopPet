@@ -149,10 +149,21 @@ public class NixieAssets
 "@
 
 $root = Split-Path -Parent $PSScriptRoot
+
+# 两种布局都要支持：
+#   源码仓库   tools\ 与 src\ 同级          -> 输出 src\assets
+#   安装版     tools\ 在安装根目录，程序本体在 resources\app\src
+#                                                      -> 输出 resources\app\src\assets
+$packaged = Test-Path (Join-Path $root 'resources\app\src')
 $src = Join-Path $root 'image'
-$out = Join-Path $root 'src\assets'
+if ($packaged) {
+    $out = Join-Path $root 'resources\app\src\assets'
+    $tempDir = Join-Path $env:TEMP 'sgs-assets'
+} else {
+    $out = Join-Path $root 'src\assets'
+    $tempDir = Join-Path $root '.tmp\assets'
+}
 $tubes = Join-Path $out 'tubes'
-$tempDir = Join-Path $root '.tmp\assets'
 New-Item -ItemType Directory -Force -Path $tubes | Out-Null
 New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
 

@@ -87,6 +87,21 @@ npm start          # 等价于 node launch.js
 
 3. 生成到 `src\assets\`，下次启动自动切换到图片模式。该目录已被 `.gitignore` 忽略。
 
+### 安装版怎么换素材
+
+安装目录里同样带了 `image\` 和 `tools\prepare-assets.ps1`，不需要源码：
+
+1. 把图放进**安装目录**下的 `image\`（打开「打开文件所在的位置」就能看到）
+2. 在该目录打开 PowerShell，运行：
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\tools\prepare-assets.ps1
+   ```
+
+3. 脚本会自动识别安装版布局，把结果输出到 `resources\app\src\assets\`；重启程序即生效。
+
+> 安装目录里的 `image\` 只在本机使用，不会被程序分发出去。
+
 > 换成自备素材后，管体改为图片渲染（此处不放截图，避免本仓库出现第三方美术内容）。
 
 ---
