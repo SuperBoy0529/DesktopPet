@@ -1,0 +1,125 @@
+{
+  "_comment": "行为参数。文案（台词/品牌名/章节）在 texts.json。修改后重启生效。",
+  "window": {
+    "alwaysOnTop": true,
+    "startMode": "time",
+    "restoreLastMode": true,
+    "clickThrough": false,
+    "showTrayIcon": true,
+    "hideTaskbarIcon": false,
+    "hideOnStart": false,
+    "rememberPosition": true,
+    "toggleClickThroughHotkey": "Control+Alt+Shift+D",
+    "showHideHotkey": "Control+Alt+Shift+S",
+    "autoShowIfTrayHiddenMs": 15000
+  },
+  "time": {
+    "format": "HH:MM:SS",
+    "twentyFourHour": true
+  },
+  "worldline": {
+    "min": 0,
+    "max": 2.999999,
+    "initialValue": 1.048596,
+    "specialChance": 0.05,
+    "pityAfterMisses": 60,
+    "deltaTiers": [
+      {
+        "weight": 0.88,
+        "min": 1,
+        "max": 99
+      },
+      {
+        "weight": 0.09,
+        "min": 100,
+        "max": 9999
+      },
+      {
+        "weight": 0.03,
+        "min": 10000,
+        "max": 400000
+      }
+    ],
+    "specialValues": [
+      {
+        "value": 1.048596,
+        "weight": 0.9
+      },
+      {
+        "value": 1.123581,
+        "weight": 0.9
+      },
+      {
+        "value": 1.130426,
+        "weight": 1
+      },
+      {
+        "value": 1.129848,
+        "weight": 1
+      },
+      {
+        "value": 1.382733,
+        "weight": 1
+      },
+      {
+        "value": 1.130205,
+        "weight": 1
+      },
+      {
+        "value": 1.130238,
+        "weight": 1
+      },
+      {
+        "value": 0.571024,
+        "weight": 1
+      },
+      {
+        "value": 0.571015,
+        "weight": 1
+      },
+      {
+        "value": 0.523307,
+        "weight": 0.8
+      },
+      {
+        "value": 0.523299,
+        "weight": 0.8
+      },
+      {
+        "value": 0.456903,
+        "weight": 1
+      },
+      {
+        "value": 0.40942,
+        "weight": 1
+      },
+      {
+        "value": 0.337187,
+        "weight": 1
+      },
+      {
+        "value": -0.275349,
+        "weight": 0.7
+      },
+      {
+        "value": 2.615074,
+        "weight": 1
+      },
+      {
+        "value": 2.999999,
+        "weight": 0.7
+      }
+    ]
+  },
+  "interaction": {
+    "dragThresholdPx": 5,
+    "specialAnimationMs": 820,
+    "specialLabelHoldMs": 6000
+  },
+  "appearance": {
+    "uiScale": 1,
+    "showHeader": true,
+    "scanlines": false,
+    "background": "frosted"
+  }
+}

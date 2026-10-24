@@ -1,0 +1,17 @@
+{
+  "name": "sgs-worldline-detector",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Steins;Gate 世界线变动率探测仪 — Amadeus 风格桌面宠物",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node launch.js",
+    "start:direct": "electron .",
+    "start:debug": "node launch.js --sgs-debug",
+    "test": "node test/acceptance.js",
+    "test:integration": "node test/integration.js"
+  },
+  "devDependencies": {
+    "electron": "^44.9.0"
+  }
+}

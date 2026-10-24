@@ -1,0 +1,134 @@
+/* 自绘右键菜单 —— 与探测仪同一套仪器辉光语言 */
+
+:root {
+  --amber: #ffb257;
+  --amber-bright: #ffd9a4;
+  --font-ui: "Cascadia Mono", Consolas, "Lucida Console", monospace;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.menu {
+  width: max-content;
+  min-width: 232px;
+  box-sizing: border-box;
+  padding: 6px 6px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 170, 90, 0.3);
+  background:
+    linear-gradient(180deg, rgba(22, 15, 10, 0.97) 0%, rgba(9, 6, 4, 0.98) 100%);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    inset 0 0 30px rgba(255, 140, 40, 0.05);
+  font-family: var(--font-ui);
+}
+
+.menu-title {
+  padding: 3px 9px 7px;
+  font-size: 8px;
+  letter-spacing: 0.26em;
+  color: rgba(255, 178, 87, 0.4);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 9px;
+  border-radius: 5px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 196, 140, 0.82);
+  cursor: default;
+  transition: background-color 90ms linear, color 90ms linear;
+}
+
+.item:hover {
+  background: rgba(255, 150, 60, 0.14);
+  color: var(--amber-bright);
+}
+
+.item.checked {
+  color: var(--amber-bright);
+}
+
+.item .mark {
+  width: 10px;
+  flex: 0 0 10px;
+  color: var(--amber);
+  font-size: 11px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 5x5 的 "x" 素材，按像素放大保持锐利 */
+.item-icon {
+  width: 9px;
+  height: 9px;
+  image-rendering: pixelated;
+  opacity: 0.8;
+}
+
+.item .label {
+  flex: 1 1 auto;
+  white-space: nowrap;
+}
+
+.item .value {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 178, 87, 0.5);
+}
+
+.item.checked .value {
+  color: rgba(255, 200, 140, 0.85);
+}
+
+.item.danger:hover {
+  background: rgba(255, 96, 48, 0.16);
+  color: #ffcbae;
+}
+
+.item.danger .mark {
+  color: rgba(255, 120, 70, 0.7);
+}
+
+.sep {
+  height: 1px;
+  margin: 5px 8px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 170, 90, 0.22) 18%,
+    rgba(255, 170, 90, 0.22) 82%,
+    transparent
+  );
+}
+
+/* 分组标题（不可点击）。中文在 8px 下会糊成一团，这里给到 10px */
+.menu-group {
+  padding: 7px 9px 3px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 178, 87, 0.5);
+}
+
+.foot {
+  margin-top: 4px;
+  padding: 6px 9px 1px;
+  border-top: 1px solid rgba(255, 170, 90, 0.1);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 178, 87, 0.42);
+  white-space: nowrap;
+}

@@ -1,0 +1,35 @@
+# ---- dependencies / build output ----
+node_modules/
+dist/
+
+# ---- original art: local only, never committed ----
+image/
+src/assets/
+
+# ---- runtime data ----
+state/
+logs/
+.userdata/
+.appdata/
+
+# ---- local caches / scratch ----
+.tmp/
+.npm-cache/
+.electron-cache/
+
+# ---- certificates ----
+*.pfx
+*.cer
+*.p12
+
+# ---- build tool: NSIS (fetched by tools/get-nsis.ps1) ----
+tools/nsis/
+
+# ---- logs and OS / editor junk ----
+*.log
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+*.tmp

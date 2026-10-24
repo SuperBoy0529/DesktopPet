@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+    />
+    <title>handle</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        overflow: hidden;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: pointer;
+      }
+      #h {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        background: linear-gradient(180deg, rgba(34, 22, 14, 0.96), rgba(12, 8, 5, 0.97));
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 170, 90, 0.5),
+          0 0 10px rgba(255, 130, 35, 0.45);
+        transition: transform 90ms ease, box-shadow 90ms ease;
+      }
+      #h:hover {
+        transform: scale(1.08);
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 200, 140, 0.85),
+          0 0 16px rgba(255, 150, 50, 0.7);
+      }
+      .bar {
+        width: 2px;
+        border-radius: 1px;
+        background: #ffb257;
+        box-shadow: 0 0 5px rgba(255, 150, 50, 0.9);
+      }
+      .bar:nth-child(1) {
+        height: 8px;
+      }
+      .bar:nth-child(2) {
+        height: 12px;
+      }
+      .bar:nth-child(3) {
+        height: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="h" title="穿透中 · 点我恢复互动"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+    <script src="handle.js"></script>
+  </body>
+</html>

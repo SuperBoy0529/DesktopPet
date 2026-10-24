@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: file:;"
+    />
+    <title>世界线变动率探测仪</title>
+    <link rel="stylesheet" href="pet.css" />
+  </head>
+  <body>
+    <div id="pet" class="pet" data-mode="time" data-display="">
+      <header class="hud">
+        <div class="hud-left">
+          <span class="hud-label" id="hudLabel">LOCAL TIME</span>
+          <span class="hud-chapter" id="hudChapter"></span>
+        </div>
+        <span class="hud-status" id="hudStatus">AMADEUS · 观测链路稳定</span>
+      </header>
+
+      <div class="rack-wrap">
+        <div class="rack" id="rack" aria-live="off"></div>
+        <div class="scan" id="scan"></div>
+      </div>
+
+      <div class="status">
+        <div class="foot">
+          <span class="range" id="rangeLabel">β</span>
+          <span class="dot-sep"></span>
+          <span class="notice" id="notice"></span>
+          <span class="led" id="led"></span>
+        </div>
+        <div class="hint" id="hint"></div>
+      </div>
+    </div>
+    <script src="pet.js"></script>
+  </body>
+</html>

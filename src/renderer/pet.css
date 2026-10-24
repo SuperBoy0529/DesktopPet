@@ -1,0 +1,427 @@
+/* 世界线变动率探测仪 —— 使用 image/ 素材的 8 位辉光管视觉层
+ *
+ * 管体来自 src/assets/tubes/*.png（由 tools/prepare-assets.ps1 从 image/ 抠底生成）。
+ * 这里只负责排版、状态样式与动画，不再用 CSS 模拟管子。
+ */
+
+:root {
+  --amber: #ffb257;
+  --amber-bright: #ffd9a4;
+  --font-ui: "Cascadia Mono", Consolas, "Lucida Console", monospace;
+  /* 素材原始比例 104 x 307 */
+  --tube-h: 178px;
+  --tube-w: 60px;
+  --gap: 5px;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body {
+  cursor: grab;
+  font-family: var(--font-ui);
+}
+
+body.dragging {
+  cursor: grabbing;
+}
+
+.pet {
+  width: max-content;
+  box-sizing: border-box;
+  padding: 9px 12px 7px;
+  border-radius: 11px;
+}
+
+/* ---------------------------------------------------------------- 背板模式 */
+
+/* background: "dark" —— 深色玻璃板（默认，浅色桌面上也不突兀） */
+.pet.background-dark {
+  background: linear-gradient(180deg, rgba(18, 12, 8, 0.94) 0%, rgba(8, 5, 3, 0.96) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 170, 90, 0.16),
+    inset 0 0 44px rgba(255, 120, 30, 0.05),
+    0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+/* background: "fond" —— 使用 image/fond.png 生成的暗色底图 */
+.pet.background-fond {
+  background-image: url("../assets/fond-panel.png");
+  background-size: cover;
+  background-position: center;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 170, 90, 0.16),
+    inset 0 0 40px rgba(0, 0, 0, 0.6),
+    0 0 26px rgba(0, 0, 0, 0.45);
+}
+
+/* background: "acrylic" —— 由 Windows 原生材质铺底。
+ * 实测：这个环境里系统材质渲染成一块实色板，透不出背景，所以我在这里
+ * 也压一层深色，保证最差情况只是"另一种深色板"，不会变成刺眼的白板。 */
+.pet.background-acrylic {
+  background: linear-gradient(180deg, rgba(14, 10, 7, 0.86) 0%, rgba(7, 5, 3, 0.9) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 170, 90, 0.16),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
+}
+
+/* background: "frosted" —— 自绘深色磨砂：暗色渐变 + 细噪点，
+ * 不依赖系统材质，效果可预期。噪点能把 8 支管的方形边缘"糊"进背景里。 */
+.pet.background-frosted {
+  background-image:
+    url("../assets/noise.png"),
+    radial-gradient(130% 100% at 50% 0%, rgba(34, 23, 16, 0.97) 0%, rgba(8, 6, 4, 0.98) 62%, rgba(5, 4, 3, 0.99) 100%);
+  background-repeat: repeat, no-repeat;
+  background-size: 96px 96px, cover;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 170, 90, 0.2),
+    inset 0 0 70px rgba(0, 0, 0, 0.62),
+    0 12px 34px rgba(0, 0, 0, 0.55);
+}
+
+/* 磨砂模式下把每支管的外发光加强一点，边缘更容易融进背景 */
+.pet.background-frosted .tube-img {
+  filter: drop-shadow(0 0 10px rgba(255, 120, 30, 0.3));
+}
+
+.pet.background-none {
+  background: none;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------------ 顶部 HUD */
+
+.hud {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 3px 7px;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.hud-left {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* DIVERGENCE 旁边的章节 / 出处。没有信息时完全隐藏，不留空胶囊 */
+.hud-chapter {
+  display: none;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(10, 7, 5, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(255, 170, 90, 0.12);
+  color: rgba(255, 214, 170, 0.9);
+  letter-spacing: 0.12em;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 190px;
+}
+
+.hud-chapter.visible {
+  display: inline-block;
+}
+
+.hud-label,
+.hud-status {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(10, 7, 5, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(255, 170, 90, 0.07);
+}
+
+.hud-label {
+  color: rgba(255, 186, 102, 0.92);
+  text-shadow: 0 0 8px rgba(255, 140, 40, 0.4);
+}
+
+.hud-status {
+  color: rgba(255, 186, 102, 0.7);
+  letter-spacing: 0.1em;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.pet.special-active .hud-status {
+  color: rgba(255, 200, 140, 0.85);
+}
+
+/* -------------------------------------------------------------------- 管位 */
+
+.rack-wrap {
+  position: relative;
+}
+
+.rack {
+  display: flex;
+  gap: var(--gap);
+  position: relative;
+}
+
+.slot {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--tube-w);
+  height: var(--tube-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 管体图片：素材自带暗色玻璃与灯丝，只加一点外发光让它"亮在桌面上" */
+.tube-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 0 7px rgba(255, 130, 35, 0.22));
+}
+
+/* 换字：辉光管重新起弧的短促闪动 */
+.slot.settle .tube-img {
+  animation: settle 150ms ease-out;
+}
+
+@keyframes settle {
+  0% {
+    opacity: 0.32;
+  }
+  18% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 0.55;
+  }
+  58% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 小数点 / 冒号：占一个真实管位，管体保持未点亮的暗色，只有光点在低亮度常亮 */
+.slot.is-sep .tube-img {
+  filter: brightness(0.5) saturate(0.85);
+}
+
+.sep-dot {
+  display: none; /* 默认熄灭；只有分隔符管位才点亮 */
+  position: absolute;
+  left: 50%;
+  width: 62%;
+  height: auto;
+  transform: translate(-50%, -50%);
+  opacity: 0.85; /* 低亮度常亮 */
+  filter: drop-shadow(0 0 6px rgba(255, 140, 40, 0.5));
+  -webkit-user-drag: none;
+}
+
+.slot.is-sep .sep-dot.upper {
+  top: 32%;
+}
+
+.slot.is-sep .sep-dot.lower {
+  top: 68%;
+}
+
+/* 小数点：1 个点，居中 */
+.slot.is-sep[data-dots="1"] .sep-dot.lower {
+  display: block;
+  top: 50%;
+}
+
+/* 冒号：2 个点 */
+.slot.is-sep[data-dots="2"] .sep-dot {
+  display: block;
+}
+
+/* ------------------------------------------------------------ 扫描线 / 过载 */
+
+.scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 6px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.4) 0px,
+    rgba(0, 0, 0, 0.4) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.26;
+  mix-blend-mode: multiply;
+}
+
+.pet.no-scan .scan {
+  display: none;
+}
+
+/* 世界重构：整体过载 */
+.pet.surge .rack {
+  animation: jitter 90ms steps(2) infinite;
+}
+
+.pet.surge .tube-img {
+  filter: brightness(1.35) saturate(1.1) drop-shadow(0 0 12px rgba(255, 150, 50, 0.5));
+}
+
+.pet.surge .hud-label {
+  color: #ffe2b8;
+}
+
+@keyframes jitter {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(0.6px);
+  }
+  100% {
+    transform: translateX(-0.6px);
+  }
+}
+
+/* 落定瞬间的白闪 */
+.rack::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: rgba(255, 224, 176, 0.42);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.pet.flash .rack::after {
+  animation: flash 280ms ease-out;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ 状态条 */
+
+.status {
+  margin-top: 4px;
+  padding: 3px 7px 3px;
+  border-radius: 4px;
+  background: rgba(13, 9, 6, 0.93);
+  box-shadow: inset 0 0 0 1px rgba(255, 170, 90, 0.08);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.25;
+  letter-spacing: 0.12em;
+  color: rgba(255, 196, 140, 0.82);
+  min-height: 16px;
+}
+
+/* 特殊世界线的第二行：游戏台词 / 语境说明。高度常驻，避免出现时窗口跳动 */
+.hint {
+  margin-top: 2px;
+  min-height: 13px;
+  font-size: 10px;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  color: rgba(255, 200, 150, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hint.special {
+  color: rgba(255, 214, 170, 0.95);
+  text-shadow: 0 0 8px rgba(255, 150, 60, 0.5);
+}
+
+.range {
+  color: rgba(255, 206, 150, 0.95);
+  font-weight: 600;
+  letter-spacing: 0;
+  min-width: 9px;
+  font-size: 11px;
+}
+
+.pet[data-mode="time"] .range,
+.pet[data-mode="time"] .dot-sep {
+  visibility: hidden;
+}
+
+.pet.special-active .range,
+.pet.special-active .dot-sep {
+  visibility: hidden;
+}
+
+.dot-sep {
+  width: 1px;
+  height: 8px;
+  background: rgba(255, 170, 90, 0.25);
+}
+
+.notice {
+  color: rgba(255, 205, 158, 0.82);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  transition: color 160ms ease;
+}
+
+.notice.special {
+  color: var(--amber-bright);
+  text-shadow: 0 0 10px rgba(255, 150, 60, 0.75);
+  letter-spacing: 0.16em;
+}
+
+.led {
+  width: 4px;
+  height: 4px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 6px rgba(255, 170, 90, 0.9);
+  animation: breath 2.6s ease-in-out infinite;
+}
+
+@keyframes breath {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
